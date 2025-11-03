@@ -116,31 +116,27 @@ const registerController = async (req, res) => {
   const forgotPasswordController = async(req,res)=>{
     try {
         let {email} = req.body
-        console.log(email);
         
         if(!email){
           res.status(404).json({message: "email not found"})
         }
         
         let user = await userModel.findOne({email})
-        console.log("error2");
-        
+       
         if(!user){
           res.status(404).json({message: "user not found"})
         }
         
         let rawToken = jwt.sign({id: user._id}, process.env.JWT_SECRET, {expiresIn: "20min"})
-        console.log("error3");
+  
         
         let resetLink =`http://localhost:3000/api/auth/reset-password/${rawToken}`;
-        console.log("error4");
+    
         
         let emailTemp = resetPassTemplate(user.name, resetLink)
-        console.log("error5");
-        
 
         await sendMail(email, 'reset password',emailTemp)
-        console.log("error6");
+
 
          return res.status(200).json({
       message:"Reset link sent"
